@@ -38,7 +38,7 @@ object LeraETLMain extends ContextCreator {
     val (sourceSystem: String, tableConfigs: ParSeq[TableConfig]) =
       getTableConfig(args)
 
-    val ingestionThread: Future[Unit] = Future(startIngestionProcess(null,null))
+    val ingestionThread: Future[Unit] = Future(startIngestionProcess(sourceSystem,tableConfigs))
 
     ingestionMonitor(ingestionThread, tableConfigs, sourceSystem)
 
@@ -113,7 +113,7 @@ object LeraETLMain extends ContextCreator {
       }
     }
     logger.info(s"Fatal time taken for execution: $diffMinutes minutes")
-    val failedJobs: Array[TableRunInfo] =null
+    val failedJobs: Array[TableRunInfo] =getJobStatus(config)
     // Close the spark session as job completed
 
     if (failedJobs.isEmpty) {
@@ -177,7 +177,7 @@ object LeraETLMain extends ContextCreator {
           row =>
             (
               row.getAs[Int]("notification_interval"),
-              row.getAs[Int]("")
+              row.getAs[Int]("max_runtime")
           )
         )
         .head
