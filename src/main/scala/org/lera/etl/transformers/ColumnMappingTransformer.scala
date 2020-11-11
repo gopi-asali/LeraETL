@@ -10,6 +10,7 @@ import org.lera.etl.util.utils._
 import org.lera.etl.util.Constants._
 import scala.collection.parallel.ParSeq
 import org.apache.spark.sql.functions._
+
 object ColumnMappingTransformer extends BaseTransformer {
 
   val targetMappingColumns: mutable.Map[String, Array[String]] =

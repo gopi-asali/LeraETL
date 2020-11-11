@@ -5,32 +5,9 @@ import java.util.Properties
 import org.lera.etl.util.utils.JDBC_URL_Generator
 
 import scala.util.{Failure, Success}
-
-/*
-
-  val connectionURL = ""
-
-  val JDBCDriver = ""
-
-  def executeQuery(query:String):Boolean={
-    true
-  }
-
-  def buildQueryForInsert(tableName:String,tableName2:String,column:Array[String]) (isFullLoad:Boolean) = {
-    ""
-  }
-
-  def buildDeleteStatement(tableName:String,cond:String="") ={
-    ""
-  }
-
-}
-*/
-
 import org.apache.log4j.Logger
 import org.lera.ContextCreator
 import org.lera.etl.util.Constants._
-
 import scala.util.Try
 
 object ImpalaConnector extends ContextCreator{
@@ -38,13 +15,21 @@ object ImpalaConnector extends ContextCreator{
   lazy val connection: Connection = DriverManager.getConnection(connectionURL)
   lazy val statement: Statement = connection.createStatement()
 
-  val userName : String = getProperty(impalaUserName)
+ /* val userName : String = getProperty(impalaUserName)
   val password : String = getProperty(impalaPassword)
   val JDBCDriver : String = getProperty(jdbcDriver)
+*/
+
+  val userName : String = getProperty(hiveUserName)
+  val password : String = getProperty(hivePassword)
+  val JDBCDriver : String = getProperty(hiveJDBCDriver)
 
   Class.forName(JDBCDriver).newInstance
 
-  val connectionURL: String = JDBC_URL_Generator(getProperty(impalaURL), userName,password)
+  //val connectionURL: String = JDBC_URL_Generator(getProperty(impalaURL), userName,password)
+  //val connectionURL: String = JDBC_URL_Generator(getProperty(hiveURL), userName, password)
+
+  val connectionURL: String = JDBC_URL_Generator(getProperty(hiveURL), userName, password)
 
   private val logger: Logger = Logger.getLogger(ImpalaConnector.getClass)
 

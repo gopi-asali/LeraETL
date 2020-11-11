@@ -5,46 +5,9 @@ import org.apache.spark.sql.DataFrame
 import org.lera.ContextCreator
 import org.lera.etl.util.Constants._
 import org.lera.etl.util.ImpalaConnector.{JDBCDriver, connectionURL, statement}
-
 import scala.util.Try
 
-/*
-  def readKuduWithPredicates(tableName:String,table:String,partColumn:Any):DataFrame={
-    null
-  }
-
-  def findMinMaxValue(table: String, column: String, columnType: String): Option[(String, String)] = {
-
-  }
-
-  def getColumnTypes(table: String): Map[String, String] ={
-    import scala.collection.mutable
-
-    val resultSet = statement.executeQuery(s"DESCRIBE $table")
-
-    val columnNames = mutable.Map.empty[String, String]
-    while(resultSet.next()) {
-      val columnName: String = resultSet.getString("name")
-      val colType: String = resultSet.getString("type")
-      columnNames.put(columnName, colType)
-    }
-    resultSet.close()
-    columnNames.toMap
-  }
-
-  def getJDBCProperties: Properties = {
-    import java.util.Properties
-    val properties = new Properties()
-    properties.setProperty("driver", JDBCDriver)
-    properties.setProperty("fetchsize", "100000")
-    properties.setProperty("pushDownPredicate", "false")
-    properties
-  }
- */
-
 object Predicates extends ContextCreator {
-
-
 
   /*
   * Read kudu data with predicates to have multiple partitions

@@ -3,7 +3,6 @@ package org.lera.etl.readers
 import java.util.Properties
 
 import org.apache.spark.sql.SparkSession
-
 import scala.io.Source
 
 trait PipelineBase {

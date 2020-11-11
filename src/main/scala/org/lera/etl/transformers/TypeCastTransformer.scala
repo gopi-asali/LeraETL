@@ -9,6 +9,7 @@ import scala.collection.parallel.ParSeq
 
 import org.lera.etl.util.utils._
 import org.apache.spark.sql.functions._
+
 object TypeCastTransformer extends BaseTransformer {
 
   private val logger: Logger = Logger.getLogger(TypeCastTransformer.getClass)

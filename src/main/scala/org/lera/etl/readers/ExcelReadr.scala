@@ -5,8 +5,8 @@ import java.util.Properties
 import org.apache.log4j.Logger
 import org.apache.spark.sql.{DataFrame, SparkSession}
 
-/*
-object ExcelReadr extends Reader with PipelineBase {
+
+object ExcelReadr extends PipelineBase {
 
   private val logger: Logger = Logger.getLogger(ExcelReadr.getClass)
 
@@ -19,7 +19,7 @@ object ExcelReadr extends Reader with PipelineBase {
 
   def main(args: Array[String]): Unit = {
 
-    val excelDF = readData(properties, spark)
+    val excelDF = readExcelData(properties)
     excelDF.show()
     excelDF.printSchema()
     println("Records in dataframe : " + excelDF.count())
@@ -29,7 +29,7 @@ object ExcelReadr extends Reader with PipelineBase {
 //    Function call to read excel by sheets
 
     val numOfSheets = properties.getProperty("excel-sheets").toInt
-    for (i <- 1 to numOfSheets - 1) {
+    for (i <- 1 until numOfSheets - 1) {
       dfPerSheet = dfPerSheet :+ readExcelBySheets(
         spark,
         properties,
@@ -50,7 +50,7 @@ object ExcelReadr extends Reader with PipelineBase {
     spark.stop()
   }
 
-  override def readData(properties: Properties): DataFrame = {
+  def readExcelData(properties: Properties): DataFrame = {
 
     val filePath = properties.getProperty("filepath")
     logger.info(s"Reading data from Excel file $filePath")
@@ -105,7 +105,7 @@ object ExcelReadr extends Reader with PipelineBase {
   }
 
   def getIncrementalLoadFilterCondition(): String = {
-    return "Empty function.. to be continued later"
+    "Empty function.. to be continued later"
   }
 
   /* The function below can be used in case where there are multiple sheets (from 2nd sheet onwards) without schema and first sheet's schema can be imposed on the rest */
@@ -154,4 +154,3 @@ object ExcelReadr extends Reader with PipelineBase {
   }
 
 }
-*/

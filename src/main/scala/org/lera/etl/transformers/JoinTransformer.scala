@@ -7,6 +7,7 @@ import org.lera.etl.util.Constants._
 import org.lera.etl.util.utils._
 
 import scala.collection.parallel.ParSeq
+
 object JoinTransformer extends JoinBaseTransformer {
 
   private val logger: Logger = Logger.getLogger(JoinTransformer.getClass)

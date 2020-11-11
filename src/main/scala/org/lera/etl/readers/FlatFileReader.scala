@@ -90,7 +90,7 @@ object FlatFileReader extends Reader {
       .load(path = s"$fileLocation")
 
     /* else if(numOfFiles > 1) {
-   * throw new IBPException(
+   * throw new Exception(
    * s"Due to number of source files more than one at location $fileLocation"
    * )
    * } else {

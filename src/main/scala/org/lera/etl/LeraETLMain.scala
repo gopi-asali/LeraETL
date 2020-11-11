@@ -3,7 +3,7 @@ package org.lera.etl
 import org.apache.log4j.Logger
 import org.apache.spark.sql.DataFrame
 import org.lera.etl.util.Constants.StringExpr
-import org.lera.etl.util.Parser._
+import org.lera.etl.util.Parser.{logger, _}
 import org.lera.etl.util.utils._
 import org.lera.etl.util.{ETLException, EmailSMTPClient, KuduUtils, TableRunInfo}
 import org.lera.{ContextCreator, TableConfig}
@@ -19,6 +19,8 @@ object LeraETLMain extends ContextCreator {
 
   def main(args: Array[String]): Unit = {
 
+    logger.info(s"SparkSession is created")
+
     if ((args.length > 2 && null == args(2)) || (args.length == 2)) {
       logger.info(
         "Only two out of three arguments are provided. Load type parameter is taken from "
@@ -27,10 +29,10 @@ object LeraETLMain extends ContextCreator {
 
     if (args.length < 2) {
       logger.error(
-        "Minimum two arguments are required i.e., Source System and Region "
+        "Source System and Region, minimum two arguments are required."
       )
 
-      throw new Exception("Illegal argument exception")
+      throw new Exception("Incorrect arguments exception")
     }
 
     import scala.concurrent.ExecutionContext.Implicits.global
@@ -150,7 +152,7 @@ object LeraETLMain extends ContextCreator {
 
   def getControl(sourceSystem: String): (Int, Int) = {
     val tableName =
-      s"$ibpAuditDatabase.${getProperty("spark.job_exec_control_table")}"
+      s"$etlAuditDatabase.${getProperty("spark.job_exec_control_table")}"
     val controlDf = KuduUtils
       .readKuduWithCondition(
         tableName,
@@ -160,12 +162,12 @@ object LeraETLMain extends ContextCreator {
     if (controlDf.isEmpty) {
 
       val defaultNotificationTime: Int =
-        Try(getProperty("spark.ibp_default_notification_interval_time"))
+        Try(getProperty("spark.default_notification_interval_time"))
           .getOrElse("30")
           .toInt
 
       val defaultIntTime: Int =
-        Try(getProperty("spark.ibp_default_max_run_time"))
+        Try(getProperty("spark.default_max_run_time"))
           .getOrElse("120")
           .toInt
 
@@ -189,9 +191,9 @@ object LeraETLMain extends ContextCreator {
                                     message: String,
                                     runTime: String): Unit = {
 
-    val recipients: String = getProperty("spark.ibp_notification_mail_list")
+    val recipients: String = getProperty("spark.notification_mail_list")
     val subject: String =
-      s"${getProperty("spark.ibp_notification_mail_subject")} for $sourceSystem is "
+      s"${getProperty("spark.notification_mail_subject")} for $sourceSystem is "
 
     import EmailSMTPClient._
 

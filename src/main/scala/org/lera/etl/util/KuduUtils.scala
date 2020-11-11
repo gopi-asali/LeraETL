@@ -1,11 +1,14 @@
 package org.lera.etl.util
 
 import org.lera.etl.util.Constants.StringExpr
+
 import org.lera.etl.util.ImpalaConnector._
+
 import org.lera.etl.util.utils._
 import org.lera.{ContextCreator, TableConfig}
 
 import scala.util.{Failure, Success}
+
 object KuduUtils extends ContextCreator{
 
   import org.apache.log4j.Logger
@@ -25,7 +28,7 @@ object KuduUtils extends ContextCreator{
 
   /*
    * This method will perform JDBC Kudu reading with partition if partition details are provided in
-   * ibp_partition_column table
+   * partition_column table
    * else will read without partition
    *
    * @param tableConf tableConfig
@@ -82,8 +85,8 @@ object KuduUtils extends ContextCreator{
 
     import Constants._
     import org.apache.spark.sql.Encoders
-    val partitionTable : String =
-      s"$leraConfigDatabase.${getProperty(partitionTableName)}"
+
+    val partitionTable : String = s"$configDatabase.${getProperty(partitionCfgTableName)}"
 
     val selectColumns : String = Array(
     sourceSystem,

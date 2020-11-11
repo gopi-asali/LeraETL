@@ -18,58 +18,58 @@ import scala.collection.GenSeq
 import scala.collection.parallel.ParSeq
 import scala.util.{Failure, Success, Try}
 /** 
- *  Utility methods and classes for IBP
+ *  Utility methods and classes
  *  **/
 
 object utils extends ContextCreator{
   
   lazy val columnMappingConfigTableName : String = {
     
-    val leraColumnMappingTable : String = getProperty(leraColumnMappingTableName)
-    s"$leraConfigDatabase.$leraColumnMappingTable"
+    val columnMappingTable : String = getProperty(columnMappingCfgTableName)
+    s"$configDatabase.$columnMappingTable"
   }
   
   lazy val defaultValuesConfigTableName : String = {
     
-    val defaultTableName : String = getProperty(leraDefaultValuesTable)
-    s"$leraConfigDatabase.$defaultTableName"
+    val defaultTableName : String = getProperty(defaultValuesCfgTableName)
+    s"$configDatabase.$defaultTableName"
   }
   
   lazy val joinConfigTableName : String ={
     
-    val joinTableName : String = getProperty(leraJoinTable)
-    s"$leraConfigDatabase.$joinTableName"
+    val joinTableName : String = getProperty(joinCfgTableName)
+    s"$configDatabase.$joinTableName"
   }
   
   lazy val lookupConfigTableName : String = {
     
-    val lookupTableName : String = getProperty(leraLookupTable)
-    s"$leraConfigDatabase.$lookupTableName"
+    val lookupTableName : String = getProperty(lookupCfgTableName)
+    s"$configDatabase.$lookupTableName"
   }
   
   lazy val conditionalMappingConfigTableName : String = {
     
-    val condTableName : String = getProperty(leraConditionTable)
-    s"$leraAuditDatabase.$condTableName"
+    val condTableName : String = getProperty(conditionCfgTableName)
+    s"$configDatabase.$condTableName"
   }
   
   lazy val deleteColumnConfigTableName : String = {
     
-    val deleteTable : String = getProperty(leraDeleteTable)
-    s"$leraConfigDatabase.$deleteTable"
+    val deleteTable : String = getProperty(deleteCfgTableName)
+    s"$configDatabase.$deleteTable"
   }
   
   lazy val filterColumnTableName : String = {
     
-    val filterTable : String = getProperty(leraFilterTable)
-    s"$leraConfigDatabase.$filterTable"
+    val filterTable : String = getProperty(filterCfgTableName)
+    s"$configDatabase.$filterTable"
   }
   
   lazy val startTime : Timestamp = now
-  val leraConfigDatabase : String = getProperty(configDB)
-  val leraConfigTable : String = getProperty(configTableName)
-  val leraAuditDatabase : String = getProperty(auditDB)
-  val leraAuditTable : String = getProperty(leraAuditTbl)
+  val configDatabase : String = getProperty(configDB)
+  val configTable : String = getProperty(genericCfgTableName)
+  val auditDatabase : String = getProperty(auditDB)
+  val auditTable : String = getProperty(auditCfgTableName)
   
   val mapSQLValue : Map[String, String] => String =
     _.mapValues(value => s"'$value'")
@@ -99,7 +99,7 @@ object utils extends ContextCreator{
     )
   }
 
-  val leraAuditTableName : String = s"$leraAuditDatabase.$leraAuditTable"
+  val auditTableName : String = s"$auditDatabase.$auditCfgTableName"
   private val logger : Logger = Logger.getLogger( this.getClass)
 
   def selectSQLColumns(values : String*): String =
@@ -203,17 +203,17 @@ object utils extends ContextCreator{
 
      val query : String = runInfo match{
        case RUNNING =>
-         s"INSERT INTO TABLE $leraAuditTableName VALUES('$source','$regionName','$table','$loaderType','$startTime','','$RUNNING','');"
+         s"INSERT INTO TABLE $auditTableName VALUES('$source','$regionName','$table','$loaderType','$startTime','','$RUNNING','');"
 
        case SUCCESS =>
-         s"UPDATE $leraAuditTableName SET run_status = '$SUCCESS', end_time = '$now', message = '$message' WHERE table_name = '$table' AND run_status = 'RUNNING';"
+         s"UPDATE $auditTableName SET run_status = '$SUCCESS', end_time = '$now', message = '$message' WHERE table_name = '$table' AND run_status = 'RUNNING';"
 
        /*case TableRunInfo(_,_,table,_,FAILED, error) =>
-        * s"UPDATE $leraAuditTableName SET run_status = '$FAILED', end_time = '$now', message = '$error' WHERE table_name = '$table' AND run_status = 'RUNNING';"
+        * s"UPDATE auditTableName SET run_status = '$FAILED', end_time = '$now', message = '$error' WHERE table_name = '$table' AND run_status = 'RUNNING';"
         * */
 
        case FAILED =>
-         s"UPSERT INTO TABLE $leraAuditTableName VALUES('$source','$regionName','$table','$loaderType','$startTime','$now','$FAILED','$message');"
+         s"UPSERT INTO TABLE $auditTableName VALUES('$source','$regionName','$table','$loaderType','$startTime','$now','$FAILED','$message');"
      }
 
 //     executeQuery(queries = query)
@@ -226,7 +226,7 @@ object utils extends ContextCreator{
 
      val tableConf : TableConfig = sourceConf.head
      val auditDf : DataFrame = KuduUtils.readKuduWithCondition(
-       leraAuditTableName,
+       auditTableName,
        where = s"source_system='${tableConf.source_system}' AND sourcedata_regionname = '${tableConf.sourcedata_regionname}'" +
          s"AND start_time = '$startTime' AND end_time <= '$now'"
      )
@@ -525,7 +525,9 @@ object utils extends ContextCreator{
 
 
   def getEmptyTableConfig: TableConfig = {
+
     import org.lera.etl.util.Constants.stringNULL
+
     TableConfig( stringNULL,
       stringNULL,
       stringNULL,
@@ -547,7 +549,7 @@ object utils extends ContextCreator{
 class MissingPropertyException(message : String) extends Exception(message)
 
 /*
- * Custom exception class for IBP
+ * Custom exception class
  *
  * @param message error message
  *
@@ -556,7 +558,7 @@ class MissingPropertyException(message : String) extends Exception(message)
 class ETLException(message : String) extends Exception(message)
 
 /* 
- * TableRunInfo is for IBP audit table
+ * TableRunInfo is for audit configuration table
  * 
  * @param sourceSystem source system name
  * @param tableName    table name
